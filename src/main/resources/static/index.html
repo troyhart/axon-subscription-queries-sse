@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>EventSource example</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!-- POLYFILL: https://github.com/Yaffle/EventSource -->
+<script src="/eventsource.min.js"></script>
+<link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="/main.css" rel="stylesheet">
+<script src="/webjars/jquery/jquery.min.js"></script>
+<script src="/app.js"></script>
+</head>
+<body>
+  <noscript>
+    <h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being enabled. Please enable Javascript and reload this page!</h2>
+  </noscript>
+  <div id="main-content" class="container">
+    <div class="row">
+      <div class="col-12">
+        <form class="form">
+          <div class="form-group">
+            <label for="basket-type">Create a new basket of the given type, or subscribe to a given basket identifier: </label> <input type="text" id="abstract-value" class="form-control"
+              placeholder="The basket type here...">
+          </div>
+          <button id="create-basket" class="btn btn-default" type="submit">Create Basket</button>
+          <button id="subscribe-to-basket" class="btn btn-default" type="submit">Subscribe to Basket</button>
+        </form>
+      </div>
+    </div>
+    <div class="row basketdetail">
+      <div class="col-12">
+        <hr>
+        <span style="font-size: x-large;">Basket</span><span style="font-size: x-small;"> id: </span><span style="font-size: x-small; font-weight: bold;" id="currentbasketid">placeholder</span>
+      </div>
+    </div>
+    <div class="row basketdetail">
+      <div class="col-12">
+        <form class="form">
+          <div class="form-group">
+            <label for="thing-name">Thing Name</label> <input type="text" id="thing-name" class="form-control" placeholder="Thing name..."> <label for="thing-description">Thing
+              Description</label> <input type="text" id="thing-description" class="form-control" placeholder="Thing description...">
+          </div>
+          <button id="add-thing" class="btn btn-default" type="submit">Add Thing to Basket</button>
+        </form>
+      </div>
+    </div>
+    <div id="updatelog" class="row basketdetail">
+      <div class="col-12">
+        <div id="basketdetail"></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
