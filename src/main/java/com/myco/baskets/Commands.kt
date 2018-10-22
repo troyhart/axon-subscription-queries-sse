@@ -1,7 +1,7 @@
 package com.myco.baskets
 
 import org.axonframework.commandhandling.TargetAggregateIdentifier
-import org.springframework.util.Assert
+
 
 data class CreateBasket(
         @TargetAggregateIdentifier
@@ -9,10 +9,11 @@ data class CreateBasket(
         val type: String
 ) {
   fun validate() {
-    validateRequiredString(basketId, "basketId");
-    validateRequiredString(type, "type");
+    assertRequiredString(basketId, "basketId");
+    assertRequiredString(type, "type");
   }
 }
+
 
 data class AddThingToBasket(
         @TargetAggregateIdentifier
@@ -20,7 +21,7 @@ data class AddThingToBasket(
         val thing: Thing
 ) {
   fun validate() {
-    validateRequiredString(basketId, "basketId");
+    assertRequiredString(basketId, "basketId");
     thing.validate();
   }
 }

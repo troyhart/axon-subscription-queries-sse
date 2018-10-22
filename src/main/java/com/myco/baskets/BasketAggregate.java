@@ -11,6 +11,7 @@ import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.springframework.util.Assert;
 
+
 @Aggregate
 public class BasketAggregate {
 
@@ -19,8 +20,10 @@ public class BasketAggregate {
 
   private Set<Thing> things;
 
+
   public BasketAggregate() {
   }
+
 
   @CommandHandler
   public BasketAggregate(CreateBasket command) {
@@ -28,6 +31,7 @@ public class BasketAggregate {
     command.validate();
     apply(new BasketCreated(command.getBasketId(), command.getType()));
   }
+
 
   @CommandHandler
   public void handle(AddThingToBasket command) {
@@ -37,11 +41,13 @@ public class BasketAggregate {
     apply(new ThingAddedToBasket(command.getBasketId(), command.getThing()));
   }
 
+
   @EventSourcingHandler
   public void on(BasketCreated event) {
     this.basketId = event.getBasketId();
     things = new HashSet<>();
   }
+
 
   @EventSourcingHandler
   public void on(ThingAddedToBasket event) {

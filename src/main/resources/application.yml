@@ -8,20 +8,11 @@
 ################################################################################
 
 debug: true
-#trace: true
 
 logging:
   level:
-    org.hibernate.SQL: INFO
-    org.springframework.orm: INFO
     org.springframework.transaction: INFO
     org.apache.tomcat: INFO
-    com.fedexx: TRACE
-
-#logbook:
-#  obfuscate:
-#    headers:
-#    - foo
 
 management:
   endpoints:

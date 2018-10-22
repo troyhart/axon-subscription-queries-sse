@@ -1,89 +1,188 @@
-var eventSource = null;
-var currentBasketId = null;
+var basketModleEventStore = undefined;
+var basketListingEventStore = undefined;
+var currentBasketId = undefined;
 
-function createBasket(basketType) {
+function createBasket() {
   $.ajax({
     url : `/api/baskets`,
     type : 'POST',
     success : function(data) {
-      console.log("Created basket:......................", data);
-      showBasketDetail(data);
+      $("#subscribe-to-basket-id").val(data);
+      $(".lastbasketid").text(data);
+      manageBasketViewModelUpdatesSubscription();
     },
     data : JSON.stringify({
-      'type' : basketType
+      'type' : $("#basket-type").val()
     }),
     contentType : "application/json"
   });
 }
 
-function showBasketDetail(basketId) {
-  $(".row.basketdetail").show();
-  console.log('Showing basket details............................', basketId);
-  if (!currentBasketId) {
-    currentBasketId = basketId;
-    subscribe(currentBasketId);
-  } else if (basketId != currentBasketId) {
-    unsubscribe();
-    currentBasketId = basketId;
-    subscribe(currentBasketId);
-  }
-  $("#currentbasketid").text(currentBasketId);
+function initBasketViewModelDisplay() {
+  $.ajax({
+    url : `/api/baskets/${currentBasketId}`,
+    type : 'GET',
+    success : function(data) {
+      $("#updatelog").prepend(
+          basketViewMessage(buildBasketViewModelMessage(data))).prepend(
+          basketViewMessageHeader("Initial View"));
+    },
+    contentType : "application/json"
+  });
 }
 
-function subscribe(basketId) {
-  eventSource = new EventSourcePolyfill(`/api/baskets/${basketId}`, {
-    headers : {
-      authorization: 'bearer my.token.value'
-    }
-  });
+function manageBasketViewModelUpdatesSubscription() {
+
+  function unsubscribeFromBasketModel() {
+    basketModleEventStore.close();
+    basketModleEventStore = undefined;
+  }
+
+  if (basketModleEventStore) {
+    unsubscribeFromBasketModel();
+  }
+
+  currentBasketId = $("#subscribe-to-basket-id").val();
+  $(".currentbasketid").text(currentBasketId);
+
+  basketModleEventStore = new EventSourcePolyfill(
+      `/api/baskets/${currentBasketId}/updates`, {
+        headers : {
+          authorization : 'bearer my.token.value'
+        }
+      });
   var listener = function(event) {
     $("#updatelog")
         .prepend(
-            `<div>${event.type === "message" ? event.data : eventSource.url}</div>`)
-        .prepend(`<h3>${event.type}</h3>`);
+            basketViewMessage(event.type === "message" ? buildBasketViewModelMessage(JSON
+                .parse(event.data))
+                : basketModleEventStore.url)).prepend(
+            basketViewMessageHeader(event.type));
   };
-  eventSource.addEventListener("open", listener);
-  eventSource.addEventListener("message", listener);
-  eventSource.addEventListener("error", listener);
-  $(".row.basketdetail").show();
+  basketModleEventStore.addEventListener("open", listener);
+  basketModleEventStore.addEventListener("message", listener);
+  basketModleEventStore.addEventListener("error", listener);
+
+  initBasketViewModelDisplay();
 }
 
-function unsubscribe() {
-  $(".row.basketdetail").hide();
-  eventSource.close();
-  eventSource = undefined;
+function buildBasketViewModelMessage(data) {
+  var msg = `${data.type} :: ${data.id}`;
+  if (data.things) {
+    data.things.forEach(function(thing) {
+      msg += '<ul>';
+      msg += `<li>${thing.name} :: ${thing.description}</li>`;
+      msg += '</ul>'
+    });
+  }
+  return msg;
+}
+
+function basketViewMessageHeader(headerMessage) {
+  return `<h4>${headerMessage}</h4>`;
+}
+
+function basketViewMessage(data) {
+  return `<div>${data}</div>`;
 }
 
 function addThing() {
-  console.log("Adding thing:......................", $("#thing-name").val(), $(
-      "#thing-description").val());
-  
-  $.ajax({
-    url : `/api/baskets/${currentBasketId}/things`,
-    type : 'PUT',
-    success : function() {
-      console.log("Successfully added the thing...");
-    },
-    data : JSON.stringify({
-      "name" : $("#thing-name").val(),
-      "description" : $("#thing-description").val()
-    }),
-    contentType : "application/json"
-  });
+  $
+      .ajax({
+        url : `/api/baskets/${currentBasketId}/things`,
+        type : 'PUT',
+        success : function() {
+          console
+              .log("Successfully added the thing...expect basket view model update");
+        },
+        data : JSON.stringify({
+          "name" : $("#thing-name").val(),
+          "description" : $("#thing-description").val()
+        }),
+        contentType : "application/json"
+      });
+}
+
+function listBasketsByType() {
+  var typePartial = $("#basket-type-contains").val();
+  manageBasketsByTypeListUpdatesSubscription(typePartial);
+}
+
+function initBasketsByTypeList(typePartial) {
+
+  $
+      .ajax({
+        url : `/api/baskets?type=${typePartial}`,
+        type : 'GET',
+        success : function(data) {
+          var listing = $("#baskettypelisting");
+          listing.text("");
+          data
+              .forEach(function(element) {
+                listing
+                    .prepend(`<div class="listedbasket" data-basket-id="${element.id}">${element.type + " :: " + element.id}</div>`);
+              });
+          listing.prepend(`<h4>Listing</h4>`);
+          $(".listedbasket").click(
+              function(event) {
+                $("#subscribe-to-basket-id").val(
+                    $(event.target).attr("data-basket-id"));
+                manageBasketViewModelUpdatesSubscription();
+              });
+        },
+        contentType : "application/json"
+      });
+}
+
+function manageBasketsByTypeListUpdatesSubscription(typePartial) {
+
+  if (basketListingEventStore) {
+    basketListingEventStore.close();
+    basketListingEventStore = undefined;
+  }
+
+  basketListingEventStore = new EventSourcePolyfill(
+      `/api/baskets/updates?type=${typePartial}`, {
+        headers : {
+          authorization : 'bearer my.token.value'
+        }
+      });
+  var listener = function(event) {
+    var message;
+    if (event.type === "message") {
+      var data = JSON.parse(event.data);
+      message = `<div data-basket-id="${data.id}" class="listedbasket">${data.type + " :: " + data.id}</div>`;
+    } else {
+      message = `<div>${basketListingEventStore.url}</div>`;
+    }
+    $("#baskettypelisting").prepend(message).prepend(`<h4>${event.type}</h4>`);
+    $(".listedbasket").click(function(event) {
+      $("#subscribe-to-basket-id").val($(event.target).attr("data-basket-id"));
+      manageBasketViewModelUpdatesSubscription();
+    });
+  };
+  basketListingEventStore.addEventListener("open", listener);
+  basketListingEventStore.addEventListener("message", listener);
+  basketListingEventStore.addEventListener("error", listener);
+
+  initBasketsByTypeList(typePartial);
 }
 
 $(function() {
-  $(".row.basketdetail").hide();
+
   $("form").on('submit', function(e) {
     e.preventDefault();
   });
   $("#create-basket").click(function() {
-    createBasket($("#abstract-value").val());
+    createBasket();
   });
   $("#add-thing").click(function() {
     addThing();
   });
-  $("#subscribe-to-basket").click(function(event) {
-    showBasketDetail($("#abstract-value").val());
+  $("#subscribe-to-basket").click(function() {
+    manageBasketViewModelUpdatesSubscription();
+  });
+  $("#subscribe-to-basket-list-by-type").click(function(event) {
+    listBasketsByType();
   });
 });

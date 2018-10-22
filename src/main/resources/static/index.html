@@ -16,40 +16,76 @@
     <h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being enabled. Please enable Javascript and reload this page!</h2>
   </noscript>
   <div id="main-content" class="container">
+
     <div class="row">
-      <div class="col-12">
+      <div class="col-sm-6">
+        <h3>Create New Basket</h3>
         <form class="form">
           <div class="form-group">
-            <label for="basket-type">Create a new basket of the given type, or subscribe to a given basket identifier: </label> <input type="text" id="abstract-value" class="form-control"
-              placeholder="The basket type here...">
+            <label for="basket-type">Basket Type</label> <input type="text" id="basket-type" class="form-control" placeholder="enter basket type...">
           </div>
           <button id="create-basket" class="btn btn-default" type="submit">Create Basket</button>
-          <button id="subscribe-to-basket" class="btn btn-default" type="submit">Subscribe to Basket</button>
         </form>
       </div>
+      <div class="col-sm-6">
+        <h4>last id</h4>
+        <p class="lastbasketid"></p>
+      </div>
     </div>
-    <div class="row basketdetail">
+
+
+    <div class="row">
       <div class="col-12">
         <hr>
-        <span style="font-size: x-large;">Basket</span><span style="font-size: x-small;"> id: </span><span style="font-size: x-small; font-weight: bold;" id="currentbasketid">placeholder</span>
       </div>
     </div>
-    <div class="row basketdetail">
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="basketdetail">
+          <h3>Add Things to Basket</h3>
+          <p>Must be a unique name/description pair, for the given basket.</p>
+          <form class="form">
+            <div class="form-group">
+              <label for="thing-name">Name</label> <input type="text" id="thing-name" class="form-control" placeholder="Thing name..."> <label for="thing-description">Description</label> <input
+                type="text" id="thing-description" class="form-control" placeholder="Thing description...">
+            </div>
+            <button id="add-thing" class="btn btn-default" type="submit">Add Thing</button>
+          </form>
+        </div>
+        <hr>
+        <div>
+          <h3>Control Current Basket</h3>
+          <p>You may load any basket, provided you know its identifier</p>
+          <form class="form">
+            <div class="form-group">
+              <label for="subscribe-to-basket-id">Basket Identifier</label> <input type="text" id="subscribe-to-basket-id" class="form-control" placeholder="enter basket identifier...">
+            </div>
+            <button id="subscribe-to-basket" class="btn btn-default" type="submit">Load Basket</button>
+          </form>
+        </div>
+      </div>
+      <div id="updatelog" class="col-sm-6 streaming-result-container basketdetail"></div>
+    </div>
+
+
+    <div class="row baskettypelisting">
       <div class="col-12">
+        <hr>
+      </div>
+    </div>
+    <div class="row baskettypelisting">
+      <div class="col-sm-6">
+        <h3>List Baskets by (partial) Type Name</h3>
         <form class="form">
           <div class="form-group">
-            <label for="thing-name">Thing Name</label> <input type="text" id="thing-name" class="form-control" placeholder="Thing name..."> <label for="thing-description">Thing
-              Description</label> <input type="text" id="thing-description" class="form-control" placeholder="Thing description...">
+            <label for="basket-type-contains">Type Name</label> <input type="text" id="basket-type-contains" class="form-control" placeholder="enter any type name fragment...">
           </div>
-          <button id="add-thing" class="btn btn-default" type="submit">Add Thing to Basket</button>
+          <button id="subscribe-to-basket-list-by-type" class="btn btn-default" type="submit">Filter</button>
         </form>
       </div>
+      <div id="baskettypelisting" class="col-sm-6 streaming-result-container"></div>
     </div>
-    <div id="updatelog" class="row basketdetail">
-      <div class="col-12">
-        <div id="basketdetail"></div>
-      </div>
-    </div>
+
   </div>
 </body>
 </html>

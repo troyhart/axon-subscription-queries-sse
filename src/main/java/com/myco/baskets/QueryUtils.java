@@ -6,6 +6,7 @@ import org.axonframework.queryhandling.QueryGateway;
 import org.axonframework.queryhandling.SubscriptionQueryResult;
 import org.axonframework.queryhandling.responsetypes.ResponseTypes;
 
+
 public class QueryUtils {
 
   public static SubscriptionQueryResult<BasketView, BasketView> subscribeToBasketViewById(QueryGateway queryGateway,
@@ -18,13 +19,14 @@ public class QueryUtils {
     // @formatter:on
   }
 
-  public static SubscriptionQueryResult<List<BasketView>, List<BasketView>> subscribeToBasketsViewByType(
+
+  public static SubscriptionQueryResult<List<BasketView>, BasketView> subscribeToBasketViewsByType(
       QueryGateway queryGateway, String basketType) {
     // @formatter:off
     return queryGateway.subscriptionQuery(
-        new BasketsViewByTypeQuery(basketType),
+        new BasketViewsByTypeContainsQuery(basketType),
         ResponseTypes.multipleInstancesOf(BasketView.class), 
-        ResponseTypes.multipleInstancesOf(BasketView.class));
+        ResponseTypes.instanceOf(BasketView.class));
     // @formatter:on
   }
 }
