@@ -2,9 +2,9 @@ package com.myco.baskets;
 
 import java.util.List;
 
+import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.axonframework.queryhandling.SubscriptionQueryResult;
-import org.axonframework.queryhandling.responsetypes.ResponseTypes;
 
 
 public class QueryUtils {

@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.axonframework.eventhandling.EventHandler;
+import org.axonframework.eventhandling.SequenceNumber;
 import org.axonframework.eventhandling.Timestamp;
-import org.axonframework.eventsourcing.SequenceNumber;
 import org.axonframework.queryhandling.QueryHandler;
 import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.slf4j.Logger;

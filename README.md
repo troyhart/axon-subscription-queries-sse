@@ -7,10 +7,35 @@ This sample uses this [EventStore polyfill](https://github.com/Yaffle/EventSourc
 ## Usage
 
 * clone repository
-* Import maven project into your favorite IDE (STS has great spring boot support and is what I recommend)
-* Launch the infrastructure (postgres and mongo) with the included `docker-compose.yml`.
-* Launch the spring boot application (use STS spring boot dashboard, or however you do it in your IDE or with maven and the command line...)
-* Open browser to http://localhost:8080
+* build the docker container
+* launch the containers
+* open application
+
+### clone the repository
+
+```
+git clone git@github.com:troyhart/axon-subscription-queries-sse.git
+```
+
+### build the docker container
+
+From the project root directory:
+
+```
+$ ./build.sh
+```
+
+### launch the containers
+
+From the project root directory:
+
+```
+$ docker-compose up
+```
+
+### open application
+
+Point your browser to: [http://localhost:8686](http://localhost:8686)
 
 The application is a dumb little basket creater. You can create a basket of a given type and then add things to it. Each time you add a thing (the combination of name and description must be unique for each thing added) the model is updated and the new model is pushed from the server and the JSON data of the message is rendered on the page. 
 

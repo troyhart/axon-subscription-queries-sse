@@ -1,19 +1,21 @@
 version: '3'
 services:
-  sse-mongodb:
+  axonserver:
+    image: axoniq/axonserver:latest
+    ports:
+    - 8024:8024
+    - 8124:8124
+  sse-baskets-mongodb:
     image: mongo:4.1.2
-    hostname: mongodb
     command: mongod
     ports:
     - 27017:27017
-  sse-pgdb:
-    image: postgres:9.4
+  sse-baskets-api:
+    #build: .
+    image: sse-baskets-api:latest
     ports:
-    - 5432:5432
-    volumes:
-    - sse-vol:/var/lib/postgresql/sample
-    environment:
-    - POSTGRES_USER=sse
-    - POSTGRES_PASSWORD=sse
-volumes:
-  sse-vol:
+    - 8686:8686
+    depends_on:
+    - sse-baskets-mongodb
+    - axonserver
+    network_mode: "host"

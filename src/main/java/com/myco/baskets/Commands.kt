@@ -1,6 +1,6 @@
 package com.myco.baskets
 
-import org.axonframework.commandhandling.TargetAggregateIdentifier
+import org.axonframework.modelling.command.TargetAggregateIdentifier
 
 
 data class CreateBasket(

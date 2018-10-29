@@ -1,18 +1,8 @@
-################################################################################
-# NOTE: default configuration is dev aligned. Specify active profile to  
-# override configuration for test, production, docker, ....
-#
-# Two ways to affect the active profiles at runtime:
-# 1. as java process argument: "-Dspring.profiles.active=desiredprofile[,optionalProfile1,...,optionalProfileN]" 
-# 2. environment variable: "SPRING_PROFILES_ACTIVE=desiredprofile"
-################################################################################
-
 debug: true
 
-logging:
-  level:
-    org.springframework.transaction: INFO
-    org.apache.tomcat: INFO
+#logging:
+#  level:
+#    root: info
 
 management:
   endpoints:
@@ -21,7 +11,7 @@ management:
         include: '*'
 
 server:
-  port: 8080
+  port: 8686
 
 spring:
   application:
@@ -33,13 +23,14 @@ spring:
     mongodb:
       host: localhost
       port: 27017
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/sse
-    username: sse
-    password: sse
-  jpa:
-    database: POSTGRESQL
-    show-sql: false
-    hibernate:
-      ddl-auto: update
+
+
+---
+spring:
+  profiles: docker
+
+#  data:
+#    mongodb:
+#      host: sse-baskets-mongodb
+#      port: 27017
+  
