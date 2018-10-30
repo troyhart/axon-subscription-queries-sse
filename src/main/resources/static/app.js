@@ -33,7 +33,7 @@ function manageBasketViewModelUpdatesSubscription() {
   currentBasketId = $("#subscribe-to-basket-id").val();
   $(".currentbasketid").text(currentBasketId);
 
-  basketModleEventStore = new EventSource('/api/baskets/' + currentBasketId, {
+  basketModleEventStore = new EventSourcePolyfill('/api/baskets/' + currentBasketId, {
     headers : {
       authorization : 'bearer my.token.value'
     }
@@ -102,7 +102,7 @@ function manageBasketsByTypeListUpdatesSubscription(typePartial) {
   }
 
   $("#baskettypelisting").html("");
-  basketListingEventStore = new EventSource('/api/baskets?type=' + typePartial,
+  basketListingEventStore = new EventSourcePolyfill('/api/baskets?type=' + typePartial,
       {
         headers : {
           authorization : 'bearer my.token.value'
