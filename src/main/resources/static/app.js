@@ -4,7 +4,7 @@ var currentBasketId = undefined;
 
 function createBasket() {
   $.ajax({
-    url : `/api/baskets`,
+    url : '/api/baskets',
     type : 'POST',
     success : function(data) {
       $("#subscribe-to-basket-id").val(data);
@@ -33,12 +33,11 @@ function manageBasketViewModelUpdatesSubscription() {
   currentBasketId = $("#subscribe-to-basket-id").val();
   $(".currentbasketid").text(currentBasketId);
 
-  basketModleEventStore = new EventSourcePolyfill(
-      `/api/baskets/${currentBasketId}`, {
-        headers : {
-          authorization : 'bearer my.token.value'
-        }
-      });
+  basketModleEventStore = new EventSource('/api/baskets/' + currentBasketId, {
+    headers : {
+      authorization : 'bearer my.token.value'
+    }
+  });
   var listener = function(event) {
     $("#updatelog")
         .prepend(
@@ -53,11 +52,12 @@ function manageBasketViewModelUpdatesSubscription() {
 }
 
 function buildBasketViewModelMessage(data) {
-  var msg = `${data.type} :: ${data.id}`;
+  var msg = data.type + ' :: ' + data.id;
   if (data.things) {
     data.things.forEach(function(thing) {
       msg += '<ul>';
-      msg += `<li>${thing.name} :: ${thing.description}</li>`;
+      msg += '<li>' + thing.name + ' :: ' + thing.description
+      '</li>';
       msg += '</ul>'
     });
   }
@@ -65,17 +65,17 @@ function buildBasketViewModelMessage(data) {
 }
 
 function basketViewMessageHeader(headerMessage) {
-  return `<h4>${headerMessage}</h4>`;
+  return '<h4>' + headerMessage + '</h4>';
 }
 
 function basketViewMessage(data) {
-  return `<div>${data}</div>`;
+  return '<div>' + data + '</div>';
 }
 
 function addThing() {
   $
       .ajax({
-        url : `/api/baskets/${currentBasketId}/things`,
+        url : '/api/baskets/' + currentBasketId + '/things',
         type : 'PUT',
         success : function() {
           console
@@ -102,8 +102,8 @@ function manageBasketsByTypeListUpdatesSubscription(typePartial) {
   }
 
   $("#baskettypelisting").html("");
-  basketListingEventStore = new EventSourcePolyfill(
-      `/api/baskets?type=${typePartial}`, {
+  basketListingEventStore = new EventSource('/api/baskets?type=' + typePartial,
+      {
         headers : {
           authorization : 'bearer my.token.value'
         }
@@ -112,11 +112,12 @@ function manageBasketsByTypeListUpdatesSubscription(typePartial) {
     var message;
     if (event.type === "message") {
       var data = JSON.parse(event.data);
-      message = `<div data-basket-id="${data.id}" class="listedbasket">${data.type + " :: " + data.id}</div>`;
+      message = '<div data-basket-id="' + data.id + '" class="listedbasket">'
+          + data.type + ' :: ' + data.id + '</div>';
     } else {
-      message = `<div>${basketListingEventStore.url}</div>`;
+      message = '<div>' + basketListingEventStore.url + '</div>';
     }
-    $("#baskettypelisting").prepend(message).prepend(`<h4>${event.type}</h4>`);
+    $("#baskettypelisting").prepend(message).prepend('<h4>'+event.type+'</h4>');
     $(".listedbasket").click(function(event) {
       $("#subscribe-to-basket-id").val($(event.target).attr("data-basket-id"));
       manageBasketViewModelUpdatesSubscription();

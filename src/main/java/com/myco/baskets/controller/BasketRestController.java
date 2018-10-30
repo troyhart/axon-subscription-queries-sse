@@ -67,8 +67,10 @@ public class BasketRestController {
     });
   }
 
+
   @GetMapping(path = "/api/baskets/{basketId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
   public Flux<BasketView> basketUpdates(@PathVariable String basketId) {
+
     SubscriptionQueryResult<BasketView, BasketView> res = QueryUtils.subscribeToBasketViewById(queryGateway, basketId);
     return res.initialResult().concatWith(res.updates());
   }
