@@ -55,6 +55,15 @@ public class BasketRestController {
   }
 
 
+  @PostMapping(path = "/api/baskets/{basketId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public CompletableFuture<String> newBasket(@PathVariable String basketId,
+      @RequestBody CreateBasketRequest requestBody, HttpServletRequest request) {
+
+    log(request);
+    return commandGateway.send(new CreateBasket(basketId, requestBody.getType()));
+  }
+
+
   @PutMapping(path = "/api/baskets/{basketId}/things", consumes = MediaType.APPLICATION_JSON_VALUE)
   public CompletableFuture<Void> addThing(@PathVariable String basketId, @RequestBody AddThingRequest requestBody,
       HttpServletRequest request) {
@@ -82,8 +91,12 @@ public class BasketRestController {
   public Flux<BasketView> basketUpdates(@PathVariable String basketId, HttpServletRequest request) {
 
     log(request);
-    SubscriptionQueryResult<BasketView, BasketView> res = QueryUtils.subscribeToBasketViewById(queryGateway, basketId);
-    return res.initialResult().concatWith(res.updates());
+    return Flux.<BasketView> create(emitter -> {
+      SubscriptionQueryResult<BasketView, BasketView> res =
+          QueryUtils.subscribeToBasketViewById(queryGateway, basketId);
+      res.initialResult().subscribe(emitter::next);
+      res.updates().doOnComplete(emitter::complete).subscribe(emitter::next);
+    });
   }
 
 

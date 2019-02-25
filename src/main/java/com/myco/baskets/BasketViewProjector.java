@@ -73,9 +73,19 @@ public class BasketViewProjector {
 
     repository.save(basketView);
 
-    LOGGER.trace("emitting update: {}", basketView);
+    LOGGER.info("emitting update: {}", basketView);
 
     // emit the updated basket view to all subscribers
-    queryUpdateEmitter.emit(BasketViewByIdQuery.class, query -> query.getId().equals(basketView.getId()), basketView);
+    queryUpdateEmitter.emit(BasketViewByIdQuery.class, query -> test(query, basketView), basketView);
+  }
+
+  private boolean test(BasketViewByIdQuery query, BasketView basketView) {
+    boolean res = query.getId().equals(basketView.getId());
+    if (res) {
+      LOGGER.info("HIT  -- ID: " + query.getId());
+    } else {
+      LOGGER.info("MISS -- ID: " + query.getId());
+    }
+    return res;
   }
 }

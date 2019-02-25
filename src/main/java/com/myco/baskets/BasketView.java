@@ -4,13 +4,19 @@ import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.Assert;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 @Document
 public class BasketView {
+  private static final Logger LOGGER = LoggerFactory.getLogger(BasketView.class);
 
   @Id
   private String id;
@@ -92,5 +98,16 @@ public class BasketView {
     }
     things.add(thing);
     return this;
+  }
+
+  @Override
+  public String toString() {
+    try {
+      return new ObjectMapper().writeValueAsString(this);
+    }
+    catch (JsonProcessingException e) {
+      LOGGER.error("Error converting basket view to json", e);
+      return "ERROR";
+    }
   }
 }

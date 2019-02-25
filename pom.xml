@@ -84,7 +84,7 @@
 
   <properties>
     <java.version>1.8</java.version>
-    <axon.version>4.0</axon.version>
+    <axon.version>4.0.3</axon.version>
   </properties>
 
   <build>
